@@ -55,18 +55,10 @@ def calculate_loss(model):
 
 	# forward propagation time
 	z1 = data_train.dot(W1) + biase1 # input of layer 1
-	print("z1")
-	print(z1)
 	a1 = np.tanh(z1) # output of layer 1
-	print("a1")
-	print(a1)
 	z2 = a1.dot(W2) + biase2
-	print("z2")
-	print(z2)
 	exp_scores = np.exp(z2)
 	probs = exp_scores / np.sum(exp_scores, axis=1, keepdims=True)
-	print("probs")
-	print(probs)
 	# calculate loss
 	total = 0
 	for x in range(0,int(probs.size/3)):
