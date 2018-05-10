@@ -144,6 +144,9 @@ def validate_network(network, data):
 #	iteration: number of iterations of training
 def train_network(network, train, l_rate, iteration):
 	error_thresh_reached = 0
+	error_diverger = 0 
+	old_error = 100
+	new_error = 0
 	for n in range(iteration):
 		sum_error = 0
 
@@ -161,12 +164,25 @@ def train_network(network, train, l_rate, iteration):
 
 			backward_propagate_error(network, expected)
 			update_weights(network, row, l_rate)
+			new_error = validate_network(network, data_validate)
+			
+			if (new_error > old_error):
+				error_diverger += 1
+			else:
+				error_diverger == 0
+
+			if error_diverger == 10:
+				break
+			old_error = new_error
 
 		total_error = sum_error / len(train)
+		# Training network to 92.5% accuracy because 92.5% is the grade I need for an A
 		if total_error < .075:
 			error_thresh_reached += 1
-			if error_thresh_reached == 5:
+			if error_thresh_reached == 10:
 				break
+		else:
+			error_thresh_reached == 0
 
 
 # Purpose: Use neural network to identify Iris type
@@ -183,6 +199,26 @@ def identify(network, values):
 	if index == 2:
 		print("Iris-virginica")
 
+# input data normalization functions
+def normal_a(x):
+	m = 4
+	M = 9
+	return -6 + (12)/(M-m) * (x - m)
+
+def normal_b(x):
+	m = 1
+	M = 5
+	return -6 + (12)/(M-m) * (x - m)	
+
+def normal_c(x):
+	m = 1
+	M = 7
+	return -6 + (12)/(M-m) * (x - m)
+
+def normal_d(x):
+	m = 0
+	M = 3
+	return -6 + ((12)/(M-m)) * (x - m)
 
 #####################################################################
 #                   Code to call train/use network                  #
@@ -194,6 +230,7 @@ labels = []
 f = open("iris.txt", "r")
 database = f.readlines()
 f.close()
+
 
 
 # Clean and categorize data
@@ -212,6 +249,11 @@ for line in database:
 	line = [float(i) for i in line]
 	line.append(hot)
 	data.append(line)
+for line in data:
+	line[0] = normal_a(line[0])
+	line[1] = normal_b(line[1])
+	line[2] = normal_c(line[2])
+	line[3] = normal_d(line[3])
 
 
 #random order indices to decide test set and train set of data
@@ -225,22 +267,15 @@ data_test = [data[i] for i in test_ids[120:150]]
 
 seed(1)
 error = 1
-learning_rate = 1
+learning_rate = .3
 
-# Training network to 92.5% accuracy because 92.5% is the grade I need for an A
 network = initialize_network(4, 5, 3)
-while error >= 0.075:
-	
-	#initialize network with random weights
-	# 4 input neurons, 5 hidden neurons, 3 output neurons	
-	train_network(network, data_train, learning_rate, 500)
-	error = validate_network(network, data_validate)
-	print("validate error: %.1f%%" % (error * 100))
 
-	if learning_rate < 0.7:
-		learning_rate += 0.05
-	else:
-		learning_rate -= 0.05
+#initialize network with random weights
+# 4 input neurons, 5 hidden neurons, 3 output neurons	
+train_network(network, data_train, learning_rate, 10000)
+error = validate_network(network, data_validate)
+print("validate error: %.1f%%" % (error * 100))
 
 error = validate_network(network, data_test)
 print("test error: %.1f%%" % (error * 100))
