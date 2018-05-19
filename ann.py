@@ -131,7 +131,7 @@ def validate_network(network, data):
 		outputs = [(i/out_sum) for i in outputs]
 		# using sum of squares to determine error
 		sum_error += ( 0.5 * sum((expected[i] - outputs[i])**2 
-												for i in range(len(expected))))
+							for i in range(len(expected))))
 
 	total_error = sum_error / len(data)
 	return total_error
@@ -160,7 +160,7 @@ def train_network(network, train, l_rate, iteration):
 			outputs = [(i/out_sum) for i in outputs]
 			
 			sum_error += ( 0.5 * sum((expected[i] - outputs[i])**2 
-												for i in range(len(expected))))
+								for i in range(len(expected))))
 
 			backward_propagate_error(network, expected)
 			update_weights(network, row, l_rate)
